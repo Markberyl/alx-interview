@@ -1,30 +1,21 @@
+#!/usr/bin/python3
+'''A module for working with lockboxes.
+'''
+
+
 def canUnlockAll(boxes):
-    if not boxes or not boxes[0]:
-        return False
-
+    '''Checks if all the boxes in a list of boxes containing the keys
+    (indices) to other boxes can be unlocked given that the first
+    box is unlocked.
+    '''
     n = len(boxes)
-    keys = [0]  # Start with the keys in the first box (box 0).
-    opened = [False] * n  # Initialize an array to track if each box is opened.
-
-    while keys:
-        current_box = keys.pop()  # Get the current box from the keys.
-        opened[current_box] = True  # Mark the current box as opened.
-
-        # Add any new keys found in the current box to the list of keys.
-        for key in boxes[current_box]:
-            if key < n and not opened[key]:
-                keys.append(key)
-
-    # If all boxes are opened, the 'opened' list will have all True values.
-    return all(opened)
-
-# Example usage:
-boxes = [[1], [2], [3], [4], []]
-print(canUnlockAll(boxes))  # True
-
-boxes = [[1, 4, 6], [2], [0, 4, 1], [5, 6, 2], [3], [4, 1], [6]]
-print(canUnlockAll(boxes))  # True
-
-boxes = [[1, 4], [2], [0, 4, 1], [3], [], [4, 1], [5, 6]]
-print(canUnlockAll(boxes))  # False
-
+    seen_boxes = set([0])
+    unseen_boxes = set(boxes[0]).difference(set([0]))
+    while len(unseen_boxes) > 0:
+        boxIdx = unseen_boxes.pop()
+        if not boxIdx or boxIdx >= n or boxIdx < 0:
+            continue
+        if boxIdx not in seen_boxes:
+            unseen_boxes = unseen_boxes.union(boxes[boxIdx])
+            seen_boxes.add(boxIdx)
+    return n == len(seen_boxes)
